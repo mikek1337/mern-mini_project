@@ -1,7 +1,7 @@
 import express,{Express} from 'express';
 import dotenv from 'dotenv';
 import router from './routes';
-import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 dotenv.config();
 
@@ -17,9 +17,10 @@ if(process.env.MONGO_URI === undefined){
     console.error('MONGO_URI must be defined');
     process.exit(1);
 }
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(cookieParser())
 app.use("/", router);
 const port = process.env.PORT || 3000;
 
