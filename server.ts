@@ -13,12 +13,14 @@ if(process.env.JWT_SECRET === undefined){
 const app:Express = express();
 
 //get routers from  router folder
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/mini-ticket")
-app.use("/", router);
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.urlencoded({extended: true}));
+if(process.env.MONGO_URI === undefined){
+    console.error('MONGO_URI must be defined');
+    process.exit(1);
+}
+mongoose.connect(process.env.MONGO_URI)
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use("/", router);
 const port = process.env.PORT || 3000;
 
 
