@@ -7,6 +7,7 @@ export const checkRole = (role:string[])=>(request:Request, response:Response, n
         if(typeof tokenData !== "string"){
             const hasRole = role.includes(tokenData.role.role);
             if(hasRole){
+                response.locals.user = tokenData;
                 next();
                 return;
             }
