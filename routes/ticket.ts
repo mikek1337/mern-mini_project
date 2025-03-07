@@ -26,3 +26,24 @@ export const getTickets = async (request: Request, response: Response) => {
     })
     response.status(201).json({ message: 'success', tickets: userTickets });
 }
+
+export const updateTicketStatus = async (request:Request, response:Response)=>{
+    if(response.statusCode !== 200) return;
+    const {ticketId} = request.params;
+    const {status} = request.body;
+    if(ticketId || status) {
+        response.status(400).json({message: 'Ticket id is required'});
+        return;
+    }
+    const ticket = await TicketsModel.findById(ticketId);
+    if(!ticket){
+        response.status(404).json({message: 'Ticket not found'});
+        return;
+    }
+    const updatedTicket = await TicketsModel.updateOne({
+        _id: ticketId
+    }, {status});
+
+    response.status(201).json({message: 'success', ticket: updatedTicket});
+
+}
