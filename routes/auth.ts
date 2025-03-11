@@ -43,12 +43,16 @@ export const login = async (request: Request, response: Response)=>{
         response.status(400).json({message: "Incorrect username or password1"});
         return;
     }
-    const token = await jwt.sign({id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET!)
-    response.cookie('token', token, {expires: new Date(Date.now() + 90000)});
-    const refreshToken = await jwt.sign({id:user._id}, process.env.REFRESH_SECRET!);
-    //refresh token last for 6 hours
-    response.cookie('refreshtoken', refreshToken, {httpOnly: true, sameSite:'strict', maxAge:24 * 60 * 60 * 1000})
-    response.status(200).json({token});
+    const token = await jwt.sign({id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET!,{
+        expiresIn: '1m'
+    })
+    response.cookie('token', token, {expires: new Date(Date.now() + 60000),domain: 'localhost', sameSite:'strict', priority:'high', httpOnly:true});
+    const refreshToken = await jwt.sign({id:user._id}, process.env.REFRESH_SECRET!, {
+        expiresIn: '24h'
+    });
+    
+    response.cookie('refreshtoken', refreshToken, {httpOnly: true, sameSite:'strict', maxAge:24 * 60 * 60 * 1000,expires:new Date(Date.now()+1)})
+    response.status(200).json({message: 'success', data:{token}});
 
 }
 
@@ -60,8 +64,8 @@ export const refreshToken = async (request: Request, response:Response)=>{
             const user = await UserModel.findById(verifiedData.id);
             if(user){
                 const token = await jwt.sign({id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET!);
-                response.cookie('token', token, {expires: new Date(Date.now() + 90000)})
-                response.status(200).json({token});
+                response.cookie('token', token, {expires: new Date(Date.now() + 90000), domain: 'localhost', sameSite:'strict'});
+                response.status(200).json({message: 'success', data:{token}});
                 return;
             }
             response.status(401).json({message:'unauthorized'});
@@ -69,7 +73,14 @@ export const refreshToken = async (request: Request, response:Response)=>{
         }
 
     }
-    response.status(401).json({message:'unauthorized1'});
+    response.status(401).json({message:'unauthorized'});
+}
+
+export const me = async (request: Request, response: Response)=>{
+    const user = response.locals.user;
+   
+    if(response.statusCode !== 200) return;
+    response.status(200).json({message: 'success', data: {user}});
 }
 
 export const logout = async (request: Request, response: Response)=>{
