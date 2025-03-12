@@ -26,3 +26,34 @@ export const getTickets = async (request: Request, response: Response) => {
     })
     response.status(201).json({ message: 'success', tickets: userTickets });
 }
+
+export const getTicketStats = async (request:Request, response:Response)=>{
+    if(response.statusCode !== 200) return;
+    const ticketsStatus = await TicketsModel.aggregate([
+        {
+            $group:{
+                _id:{
+                    status:'$status'
+                },
+                count:{$sum:1}
+            }
+            
+        },
+        {
+            $project:{
+                status:'$_id.status',
+                totalNumber:'$count',
+                _id:0
+            }  
+        }
+    ]);
+    response.status(201).json({message:'success', ticketsStatus});
+    return
+}
+
+export const updateTicketStatus = async (request:Request, response:Response)=>{
+    if(response.statusCode !== 200) return;
+    const {id, status} = request.body;
+    const ticket = await TicketsModel.updateOne({_id:id}, {status});
+    response.status(201).json({message:'success', ticket});
+};

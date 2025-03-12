@@ -10,19 +10,25 @@ export const signup = async (request: Request, response: Response)=>{
          response.status(400).json({message: "User already exists"});
          return;
     }
-    const newUser = new UserModel({
-        username,
-        password: hashSync(password, 10),
-        role:{
-            role,
-            permissions: []
+    try{
+
+        const newUser = new UserModel({
+            username,
+            password: hashSync(password, 10),
+            role:{
+                role,
+                permissions: []
+            }
+        });
+        const savedUser =  await newUser.save();
+        if(savedUser){
+            const token = await jwt.sign({id: newUser._id, username: newUser.username, role: newUser.role}, process.env.JWT_SECRET!)
+            response.cookie('token', token, {expires: new Date(Date.now() + 90000)});
+             response.status(201).json({token});
         }
-    });
-    const savedUser =  await newUser.save();
-    if(savedUser){
-        const token = await jwt.sign({id: newUser._id, username: newUser.username, role: newUser.role}, process.env.JWT_SECRET!)
-        response.cookie('token', token, {expires: new Date(Date.now() + 90000)});
-         response.status(201).json({token});
+    }catch(err){
+        console.log(err);
+        response.status(400).json({message: "Missing required fields"});
     }
     
     
