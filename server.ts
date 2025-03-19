@@ -13,6 +13,7 @@ if(process.env.JWT_SECRET === undefined){
 
 const app:Express = express();
 
+
 //get routers from  router folder
 if(process.env.MONGO_URI === undefined){
     console.error('MONGO_URI must be defined');
@@ -28,7 +29,7 @@ app.use(cors({
     methods:['POST', 'GET', 'PUT'],
     maxAge:86400
 
-}))
+}));
 app.use("/", router);
 const port = process.env.PORT || 3000;
 

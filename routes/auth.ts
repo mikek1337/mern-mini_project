@@ -65,18 +65,23 @@ export const login = async (request: Request, response: Response)=>{
 export const refreshToken = async (request: Request, response:Response)=>{
     if(request.cookies?.refreshtoken){
         const refreshToken = request.cookies.refreshtoken;
-        const verifiedData = jwt.verify(refreshToken, process.env.REFRESH_SECRET!);
-        if(typeof verifiedData !=="string"){
-            const user = await UserModel.findById(verifiedData.id);
-            if(user){
-                const token = await jwt.sign({id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET!);
-                response.cookie('token', token, {expires: new Date(Date.now() + 90000), domain: 'localhost', sameSite:'strict'});
-                response.status(200).json({message: 'success', data:{token}});
-                return;
+        try{
+
+            const verifiedData = jwt.verify(refreshToken, process.env.REFRESH_SECRET!);
+            if(typeof verifiedData !=="string"){
+                const user = await UserModel.findById(verifiedData.id);
+                if(user){
+                    const token = await jwt.sign({id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET!);
+                    response.cookie('token', token, {expires: new Date(Date.now() + 90000), domain: 'localhost', sameSite:'strict'});
+                    response.status(200).json({message: 'success', data:{token}});
+                    return;
+                }
             }
+        }catch(err){
+
             response.status(401).json({message:'unauthorized'});
-            return;
         }
+            return;
 
     }
     response.status(401).json({message:'unauthorized'});

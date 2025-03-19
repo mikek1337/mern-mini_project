@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
-import { Tickets } from "../schema/tickets";
+import { TicketComment, Tickets } from "../schema/tickets";
 
-export const TicketsModel = mongoose.model("Tickets", Tickets);
+export const TicketCommentModel = mongoose.model("TicketComments", TicketComment);
+export const TicketsModel = mongoose.model("Tickets",Tickets);

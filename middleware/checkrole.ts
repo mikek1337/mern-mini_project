@@ -6,18 +6,22 @@ export const checkRole = (role:string[])=>(request:Request, response:Response, n
             response.status(401).json({message:'unauthorized'});
             return;
         }
-        const tokenData = jwt.verify(token, process.env.JWT_SECRET!);
-        if(typeof tokenData !== "string"){
-            const hasRole = role.includes(tokenData.role.role);
-            if(hasRole){
-                response.locals.user = tokenData;
-                next();
-                return;
+        try {
+            
+            const tokenData = jwt.verify(token, process.env.JWT_SECRET!);
+            if(typeof tokenData !== "string"){
+                const hasRole = role.includes(tokenData.role.role);
+                if(hasRole){
+                    response.locals.user = tokenData;
+                    next();
+                    return;
+                }
+                response.status(403).json({message:'Access denied. Insufficient permission'});
+                return
             }
-            response.status(403).json({message:'Access denied. Insufficient permission'});
-            return
+        } catch (error) {
+            response.status(401).json({message:'unauthorized'});
         }
-    response.status(401).json({message:'unauthorized'});
     return;
 
 }
