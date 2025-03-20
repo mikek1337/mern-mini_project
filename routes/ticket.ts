@@ -9,12 +9,14 @@ export const createTickets = async (request: Request, response: Response) => {
         description,
         userId: response.locals.user.id
     });
+    console.log(ticket)
     const newTicket = await ticket.save()
     response.status(201).json({ message: 'success', ticket: newTicket });
 
 }
 
 export const getTickets = async (request: Request, response: Response) => {
+
     if (response.statusCode !== 200) return;
     if (response.locals.user.role.role === 'admin') {
         const tickets = await TicketsModel.find();
@@ -23,7 +25,8 @@ export const getTickets = async (request: Request, response: Response) => {
     }
     const userTickets = await TicketsModel.find({
         userId: response.locals.user.id
-    }).limit(2).sort('createdAt')
+    }).sort('createdAt');
+ 
     response.status(201).json({ message: 'success', data: userTickets });
 }
 
