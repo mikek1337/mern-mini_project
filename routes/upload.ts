@@ -6,5 +6,5 @@ export const uploads = (req:Request, res:Response)=>{
         res.status(400).json({message:'sucess', data:null})
         return;
     }
-    res.status(201).json({message:'sucess', data:{filename:req.file.filename}});
+    res.status(201).json({message:'sucess', data:{filename:req.file.path}});
 }

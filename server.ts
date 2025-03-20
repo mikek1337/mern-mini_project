@@ -31,6 +31,8 @@ app.use(cors({
 
 }));
 app.use("/", router);
+app.use("/uploads",express.static("uploads"));
+console.log(__dirname);
 const port = process.env.PORT || 3000;
 
 
