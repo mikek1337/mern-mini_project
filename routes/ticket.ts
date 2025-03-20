@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UserModel } from "../model/user";
-import { TicketsModel } from "../model/ticket";
+import { TicketCommentModel, TicketsModel } from "../model/ticket";
 export const createTickets = async (request: Request, response: Response) => {
     if (response.statusCode !== 200) return;
     const { title, description } = request.body;
@@ -18,32 +18,51 @@ export const getTickets = async (request: Request, response: Response) => {
     if (response.statusCode !== 200) return;
     if (response.locals.user.role.role === 'admin') {
         const tickets = await TicketsModel.find();
-        response.status(201).json({ message: 'success', tickets: tickets });
+        response.status(201).json({ message: 'success', data: tickets });
         return;
     }
     const userTickets = await TicketsModel.find({
         userId: response.locals.user.id
-    })
-    response.status(201).json({ message: 'success', tickets: userTickets });
+    }).limit(2).sort('createdAt')
+    response.status(201).json({ message: 'success', data: userTickets });
+}
+
+export const getTicketById = async (request:Request, response:Response)=>{
+    if(response.statusCode !== 200) return;
+    const {ticketId} =  request.query
+    const ticket = await TicketsModel.findById(ticketId);
+    console.log(ticketId);
+   
+    response.status(201).json({message:'success', data:ticket});
+}
+
+export const getTicketStats = async (request:Request, response:Response)=>{
+    if(response.statusCode !== 200) return;
+    const ticketsStatus = await TicketsModel.aggregate([
+        {
+            $group:{
+                _id:{
+                    status:'$status'
+                },
+                count:{$sum:1}
+            }
+            
+        },
+        {
+            $project:{
+                status:'$_id.status',
+                totalNumber:'$count',
+                _id:0
+            }  
+        }
+    ]);
+    response.status(201).json({message:'success', data:ticketsStatus});
+    return
 }
 
 export const updateTicketStatus = async (request:Request, response:Response)=>{
     if(response.statusCode !== 200) return;
-    const {ticketId} = request.params;
-    const {status} = request.body;
-    if(ticketId || status) {
-        response.status(400).json({message: 'Ticket id is required'});
-        return;
-    }
-    const ticket = await TicketsModel.findById(ticketId);
-    if(!ticket){
-        response.status(404).json({message: 'Ticket not found'});
-        return;
-    }
-    const updatedTicket = await TicketsModel.updateOne({
-        _id: ticketId
-    }, {status});
-
-    response.status(201).json({message: 'success', ticket: updatedTicket});
-
-}
+    const {id, status} = request.body;
+    const ticket = await TicketsModel.updateOne({_id:id}, {status});
+    response.status(201).json({message:'success', ticket});
+};

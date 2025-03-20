@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IUser{
+    profilePic:string;
     username: string;
     password: string;
     role: IRole;
@@ -17,6 +18,7 @@ export const Role = new mongoose.Schema<IRole>({
 });
 
 export const User = new mongoose.Schema<IUser>({
+    profilePic:{type:String, required:true},
     username: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: Role, required: true }
