@@ -1,9 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, SchemaType, SchemaTypes } from "mongoose";
 import { IUser, User } from "./user";
 
 export interface ITickets{
     title:string;
-    description:string;
+    description:any;
     status:string;
     userId:string;
     createdAt?: Date;
@@ -28,7 +28,7 @@ export const TicketComment = new mongoose.Schema<IComment>({
 
 export const Tickets = new mongoose.Schema<ITickets>({
     title:{type: String, requried:true},
-    description: {type:String, required:true},
+    description: {type:SchemaTypes.Map, required:true},
     status: {type:String, default: "open"},
     userId: {type: String, required: true},
     createdAt: {type: Date, default: Date.now},
