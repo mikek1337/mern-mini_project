@@ -18,7 +18,7 @@ export const Role = new mongoose.Schema<IRole>({
 });
 
 export const User = new mongoose.Schema<IUser>({
-    profilePic:{type:String, required:true},
+    profilePic:{type:String, required:true, default:'https://robohash.org/user'},
     username: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: Role, required: true }
