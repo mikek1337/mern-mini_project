@@ -12,14 +12,14 @@ export interface ITickets{
 }
 
 export interface IComment{
-    comment:string;
+    comment:any;
     postedDate: Date;
     commenter:any;
     ticketId:string;
     tickets:any;
 }
 export const TicketComment = new mongoose.Schema<IComment>({
-    comment:{type:String, required:true},
+    comment:{type:Map, required:true},
     postedDate:{type: Date, default:Date.now},
     commenter:{type:Schema.Types.ObjectId, ref:'User'},
     ticketId:{type:String, required:true},

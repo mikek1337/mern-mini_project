@@ -32,7 +32,8 @@ export const getTickets = async (request: Request, response: Response) => {
 
 export const getTicketById = async (request:Request, response:Response)=>{
     if(response.statusCode !== 200) return;
-    const {ticketId} =  request.query
+    const {ticketId} =  request.query;
+    console.log(ticketId);
     const ticket = await TicketsModel.findById(ticketId);
     console.log(ticketId);
    
