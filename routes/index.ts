@@ -19,5 +19,5 @@ router.get("/ticket", checkRole(['admin', 'user']), getTicketById);
 router.post('/comment', checkRole(['admin', 'user']), postComment);
 router.get('/comments', checkRole(['admin', 'user']), getComments);
 router.get("/ticketstatus", checkRole(['admin']), getTicketStats);
-router.put("/updateticket", checkRole(['admin', 'user']), updateTicketStatus);
+router.put("/ticket", checkRole(['admin', 'user']), updateTicketStatus);
 export default router;

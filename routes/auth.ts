@@ -3,6 +3,7 @@ import type{ Response, Request } from "express";
 import { UserModel } from "../model/user";
 import {compareSync, hashSync} from 'bcryptjs';
 import * as jwt from "jsonwebtoken";
+import { error, info } from "../lib/logging";
 export const signup = async (request: Request, response: Response)=>{
     const {username, password, role}:IUser = request.body;
     const user = await UserModel.findOne({username});
@@ -11,7 +12,7 @@ export const signup = async (request: Request, response: Response)=>{
          return;
     }
     try{
-
+        info('Creating new user');
         const newUser = new UserModel({
             username,
             password: hashSync(password, 10),
@@ -21,13 +22,16 @@ export const signup = async (request: Request, response: Response)=>{
             }
         });
         const savedUser =  await newUser.save();
+        info('User saved in database');
         if(savedUser){
             const token = await jwt.sign({id: newUser._id, username: newUser.username, role: newUser.role}, process.env.JWT_SECRET!)
             response.cookie('token', token, {expires: new Date(Date.now() + 90000)});
+            info('Token created');
              response.status(201).json({token});
         }
     }catch(err){
         console.log(err);
+        error(`Error creating user ${err}`);
         response.status(400).json({message: "Missing required fields"});
     }
     
