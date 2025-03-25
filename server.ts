@@ -19,7 +19,9 @@ if(process.env.MONGO_URI === undefined){
     console.error('MONGO_URI must be defined');
     process.exit(1);
 }
-mongoose.connect(process.env.MONGO_URI);
+
+mongoose.connect(process.env.MONGO_URI!);
+
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser())
