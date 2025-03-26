@@ -24,7 +24,7 @@ export const signup = async (request: Request, response: Response)=>{
         const savedUser =  await newUser.save();
         info('User saved in database');
         if(savedUser){
-            const token = await jwt.sign({id: newUser._id, username: newUser.username, role: newUser.role}, process.env.JWT_SECRET!)
+            const token = await jwt.sign({id: newUser._id, username: newUser.username, role: newUser.role, profilePic:newUser.profilePic}, process.env.JWT_SECRET!)
             response.cookie('token', token, {expires: new Date(Date.now() + 90000)});
             info('Token created');
              response.status(201).json({token});
@@ -53,7 +53,7 @@ export const login = async (request: Request, response: Response)=>{
         response.status(400).json({message: "Incorrect username or password1"});
         return;
     }
-    const token = await jwt.sign({id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET!,{
+    const token = await jwt.sign({id: user._id, username: user.username, role: user.role, profilePic:user.profilePic}, process.env.JWT_SECRET!,{
         expiresIn: '1m'
     })
     response.cookie('token', token, {expires: new Date(Date.now() + 60000),domain: 'localhost', sameSite:'strict', priority:'high', httpOnly:true});
@@ -75,7 +75,7 @@ export const refreshToken = async (request: Request, response:Response)=>{
             if(typeof verifiedData !=="string"){
                 const user = await UserModel.findById(verifiedData.id);
                 if(user){
-                    const token = await jwt.sign({id: user._id, username: user.username, role: user.role}, process.env.JWT_SECRET!);
+                    const token = await jwt.sign({id: user._id, username: user.username, role: user.role, profilePic:user.profilePic}, process.env.JWT_SECRET!);
                     response.cookie('token', token, {expires: new Date(Date.now() + 90000), domain: 'localhost', sameSite:'strict'});
                     response.status(200).json({message: 'success', data:{token}});
                     return;

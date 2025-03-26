@@ -1,5 +1,5 @@
 import express from "express";
-import { login, me, refreshToken, signup } from "./auth";
+import { login, logout, me, refreshToken, signup } from "./auth";
 import { checkRole } from "../middleware/checkrole";
 import { createTickets, getTicketById, getTickets, getTicketStats, updateTicketStatus } from "./ticket";
 import { getComments, postComment } from "./comment";
@@ -10,6 +10,7 @@ const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/login", login);
+router.post("/logout", logout);
 router.post("/upload", upload.single('file'),uploads);
 router.get("/refreshtoken", refreshToken);
 router.get("/me", checkRole(['admin', 'user']), me);
